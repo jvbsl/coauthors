@@ -24,21 +24,13 @@ jobs:
       uses: textbook/git-checkout-submodule-action@master
     - uses: BSFishy/meson-build@v1.0.1
       with:
-        action: setup
-        options: libui/build libui -Ddefault_library=static
-        meson-version: 0.53.2
-    - uses: BSFishy/meson-build@v1.0.1
-      with:
-        action: setup
-        options: build
-        meson-version: 0.53.2
-    - uses: BSFishy/meson-build@v1.0.1
-      with:
-        action: compile
+        action: build
+        setup-options: libui/build libui -Ddefault_library=static
         options: -C libui/build/
         meson-version: 0.53.2
     - uses: BSFishy/meson-build@v1.0.1
       with:
-        action: compile
+        action: build
+        setup-options: build
         options: -C build/
         meson-version: 0.53.2

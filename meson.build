@@ -36,7 +36,8 @@ if host_machine.system() == 'linux'
     build_args += ['-DLINUX=1']
 elif  host_machine.system() == 'windows'
     d2d1_lib = cc.find_library('d2d1')
-    dependencies += [d2d1_lib]
+    comctrl_lib = cc.find_library('Comctl32')
+    dependencies += [d2d1_lib, comctrl_lib]
 endif
 
 project_target = executable(

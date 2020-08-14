@@ -38,8 +38,18 @@ elif  host_machine.system() == 'windows'
     d2d1_lib = cc.find_library('d2d1')
     comctrl_lib = cc.find_library('Comctl32')
     dwrite_lib = cc.find_library('Dwrite')
-    dependencies += [d2d1_lib, comctrl_lib, dwrite_lib]
-    build_args += ['-static-libgcc', '-static-libstdc++']
+    
+    dependencies += [d2d1_lib, comctrl_lib, dwrite_lib, cc.find_library('user32'),
+                        cc.find_library('kernel32'),
+                        cc.find_library('gdi32'),
+                        cc.find_library('uxtheme'),
+                        cc.find_library('msimg32'),
+                        cc.find_library('comdlg32'),
+                        cc.find_library('ole32'),
+                        cc.find_library('oleaut32'),
+                        cc.find_library('oleacc'),
+                        cc.find_library('uuid'),
+                        cc.find_library('windowscodecs')]
 endif
 
 project_target = executable(

@@ -33,9 +33,11 @@ jobs:
     - name: Build libui
       run: |
          meson setup build -Ddefault_library=static
-         meson compile -C build/
+         cd build
+         meson compile
       working-directory: libui
     - name: Build
       run: |
          meson setup build
-         meson compile -C build/
+         cd build
+         meson compile

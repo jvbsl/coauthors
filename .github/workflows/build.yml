@@ -1,0 +1,44 @@
+name: git co authors
+
+on:
+  workflow_dispatch:
+    inputs:
+  push:
+    branches:
+      - master
+      - develop
+jobs:
+  build:
+    env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: 
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@master
+    - uses: BSFishy/meson-build@v1.0.1
+      with:
+        action: setup
+        options: libui/build libui -Ddefault_library=static
+        meson-version: 0.53.2
+    - uses: BSFishy/meson-build@v1.0.1
+      with:
+        action: setup
+        options: build
+        meson-version: 0.53.2
+    - uses: BSFishy/meson-build@v1.0.1
+      with:
+        action: compile
+        options: -C libui/build/
+        meson-version: 0.53.2
+    - uses: BSFishy/meson-build@v1.0.1
+      with:
+        action: compile
+        options: -C build/
+        meson-version: 0.53.2

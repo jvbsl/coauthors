@@ -5,10 +5,25 @@
 #include <cstddef>
 #include <string>
 
+
+#ifdef LINUX
+constexpr int ArgumentStartIndex = 1;
+#else
+constexpr int ArgumentStartIndex = 0;
+#endif
+
+
+static std::vector<bool> selectedAuthors;
 int onClosing(uiWindow *w, void *data)
 {
 	uiQuit();
 	return -1;
+}
+
+void onAuthorToggle(uiCheckbox *c, void *data)
+{
+    auto index = reinterpret_cast<size_t>(data);
+    selectedAuthors[index] = (bool)uiCheckboxChecked(c);
 }
 
 void btnCancel_Clicked(uiButton *b, void *data)
@@ -34,18 +49,14 @@ enum ERROR_CODES
     OTHER
 };
 
-#ifdef LINUX
-constexpr int ArgumentStartIndex = 1;
-#else
-constexpr int ArgumentStartIndex = 0;
-#endif
+
 
 
 int main(int argc, char** argv)
 {
     if (argc < 2 + ArgumentStartIndex)
     {
-        std::cout << "Usage: coauthor ROOT_DIRECTORY COMMIT_FILE" << std::endl;
+        std::cerr << "Usage: coauthor ROOT_DIRECTORY COMMIT_FILE" << std::endl;
         return ERROR_CODES::OTHER;
     }
     std::ifstream coauthorfile;
@@ -53,7 +64,7 @@ int main(int argc, char** argv)
     coauthorfile.open(coauthorFileName);
     
     if (!coauthorfile.is_open()) {
-        std::cout << "Could not open file at: " << coauthorFileName << std::endl;
+        std::cerr << "Could not open file at: " << coauthorFileName << std::endl;
         return ERROR_CODES::COULD_NOT_OPEN_FILE;
     }
 
@@ -61,7 +72,8 @@ int main(int argc, char** argv)
     
     auto err = uiInit(&o);
     if (err != nullptr) {
-        std::cout << "error initializing ui: " << err << std::endl;
+        std::cerr << "error initializing ui: " << err << std::endl;
+        return ERROR_CODES::OTHER;
     }
     
     auto w = uiNewWindow("Add co authors?", 300, 10, 0);
@@ -77,7 +89,10 @@ int main(int argc, char** argv)
     
     std::string coauthorLine;
     
-    int currentLine = 0;
+    size_t currentLine = 0;
+    
+    std::vector<std::string> authors;
+    
     while(std::getline(coauthorfile, coauthorLine))
     {
         bool isDefault = coauthorLine[0] == '+';
@@ -90,6 +105,11 @@ int main(int argc, char** argv)
         auto cb = uiNewCheckbox(coauthorLine.c_str() + 1);
         
         uiCheckboxSetChecked(cb, isDefault);
+        
+        authors.push_back(coauthorLine.substr(1));
+        selectedAuthors.push_back(isDefault);
+        
+        uiCheckboxOnToggled(cb, onAuthorToggle, reinterpret_cast<void*>(currentLine));
    
         uiBoxAppend(box, uiControl(cb), 0);
         currentLine++;
@@ -97,6 +117,7 @@ int main(int argc, char** argv)
     
     if (currentLine == 0)
     {
+        std::cerr << "No authors configured" << std::endl;
         return ERROR_CODES::NO_AUTHORS;
     }
 
@@ -118,6 +139,24 @@ int main(int argc, char** argv)
     
     if (doAccept)
     {
+        std::ofstream commitFile;
+        auto commitFileName = std::string(argv[1 + ArgumentStartIndex]);
+        commitFile.open(commitFileName, std::ofstream::out | std::ofstream::app);
+        
+        if (!commitFile.is_open())
+        {
+            std::cerr << "Could not open commit file at: " << commitFileName << std::endl;
+            return ERROR_CODES::OTHER;
+        }
+        
+        for (int i=0;i<currentLine;i++)
+        {
+            if (selectedAuthors[i])
+            {
+                commitFile << "\nCo-authored-by: " << authors[i];
+            }
+        }
+    
         return ERROR_CODES::SUCCESS;
     }
     

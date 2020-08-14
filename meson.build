@@ -31,11 +31,11 @@ build_args += [
 
 if host_machine.system() == 'linux'
     gtkdep = dependency('gtk+-3.0')
-    dl_dep = cc.find_library('dl', required : false)
+    dl_dep = cc.find_library('dl')
     dependencies += [gtkdep, dl_dep]
     build_args += ['-DLINUX=1']
 elif  host_machine.system() == 'windows'
-    d2d1_lib = dependency('d2d1')
+    d2d1_lib = cc.find_library('d2d1')
     dependencies += [d2d1_lib]
 endif
 

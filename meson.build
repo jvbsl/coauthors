@@ -39,6 +39,7 @@ elif  host_machine.system() == 'windows'
     comctrl_lib = cc.find_library('Comctl32')
     dwrite_lib = cc.find_library('Dwrite')
     dependencies += [d2d1_lib, comctrl_lib, dwrite_lib]
+    build_args += ['-static-libgcc', '-static-libstdc++']
 endif
 
 project_target = executable(

@@ -32,12 +32,13 @@ jobs:
       run: python -m pip install meson==0.53.2
     - name: Setup libui
       run: meson setup libui/build libui -Ddefault_library=static
-    - name: Build libui
-      run: meson compile
-      working-directory: libui/build/
     - name: List builddir
       run: dir
       working-directory: libui/build/
+    - name: Build libui
+      run: meson compile
+      working-directory: libui/build/
+
     - name: Setup
       run: meson setup build
     - name: Build

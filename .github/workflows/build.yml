@@ -26,16 +26,16 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init
     - uses: actions/setup-python@v1
-    - uses: BSFishy/meson-build@v1.0.1
-      with:
-        action: build
-        directory: libui/build
-        setup-options: [build, -Ddefault_library=static]
-        options: -C libui/build/
-        meson-version: 0.53.2
-    - uses: BSFishy/meson-build@v1.0.1
-      with:
-        action: build
-        setup-options: build
-        options: -C build/
-        meson-version: 0.53.2
+    - name: Install ninja
+      run: python -m pip install ninja==1.9.0.post1
+    - name: Install meson
+      run: python -m pip install meson==0.53.2
+    - name: Build libui
+      run: |
+         meson setup build -Ddefault_library=static
+         meson build -C build/
+      working-directory: libui
+    - name: Build
+      run: |
+         meson setup build
+         meson build -C build/

@@ -24,7 +24,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
     - uses: actions/checkout@v1
     - name: Checkout submodules
-      uses: textbook/git-checkout-submodule-action@master
+      run: git submodule update --init
     - uses: actions/setup-python@v1
     - uses: BSFishy/meson-build@v1.0.1
       with:

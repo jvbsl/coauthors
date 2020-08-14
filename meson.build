@@ -37,7 +37,8 @@ if host_machine.system() == 'linux'
 elif  host_machine.system() == 'windows'
     d2d1_lib = cc.find_library('d2d1')
     comctrl_lib = cc.find_library('Comctl32')
-    dependencies += [d2d1_lib, comctrl_lib]
+    dwrite_lib = cc.find_library('Dwrite')
+    dependencies += [d2d1_lib, comctrl_lib, dwrite_lib]
 endif
 
 project_target = executable(

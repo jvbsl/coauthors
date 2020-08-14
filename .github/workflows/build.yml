@@ -26,7 +26,8 @@ jobs:
     - uses: BSFishy/meson-build@v1.0.1
       with:
         action: build
-        setup-options: libui/build libui -Ddefault_library=static
+        directory: libui
+        setup-options: build -Ddefault_library=static
         options: -C libui/build/
         meson-version: 0.53.2
     - uses: BSFishy/meson-build@v1.0.1

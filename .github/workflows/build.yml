@@ -36,11 +36,10 @@ jobs:
       run: dir
       working-directory: libui/build/
     - name: Build libui
-      run: meson compile
-      working-directory: libui/build/
+      run: ninja -C build
+      working-directory: libui
 
     - name: Setup
       run: meson setup build
     - name: Build
-      run: meson compile
-      working-directory: build/
+      run: ninja -C build

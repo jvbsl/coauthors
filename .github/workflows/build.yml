@@ -35,6 +35,9 @@ jobs:
     - name: Build libui
       run: meson compile
       working-directory: libui/build/
+    - name: List builddir
+      run: dir
+      working-directory: libui/build/
     - name: Setup
       run: meson setup build
     - name: Build

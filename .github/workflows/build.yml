@@ -37,8 +37,12 @@ jobs:
       working-directory: libui
     - name: Setup
       run: meson setup build
+      if: matrix.os == 'ubuntu-latest'
+    - name: Setup
+      run: meson setup build --backend vs
+      if: matrix.os == 'windows-latest'
     - name: Build
-      run: ninja -C build
+      run: meson compile -C build
     - uses: actions/upload-artifact@v2
       with:
         name: coauthor-linux

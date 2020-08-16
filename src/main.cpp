@@ -4,13 +4,11 @@
 #include <ui.h>
 #include <cstddef>
 #include <string>
-#include <map>
+#include <unordered_map>
+
+#ifdef _WIN32
 #include <stdio.h>
 #include<windows.h>
-
-#ifdef LINUX
-constexpr int UnicodeOutputCPCode = 1251;
-#else
 constexpr int UnicodeOutputCPCode = 65001;
 #endif
 
@@ -57,7 +55,7 @@ enum ERROR_CODES
     OTHER
 };
 
-std::map<std::string, const char*> localization = {
+std::unordered_map<std::string, const char*> localization = {
     {"deAbort", "Abbrechen"},
     {"deNone", "Keine"},
     {"deCommit", "Commit"},
@@ -82,7 +80,9 @@ std::map<std::string, const char*> localization = {
 int main(int argc, char **argv)
 {
     
+#ifdef _WIN32
     SetConsoleOutputCP(UnicodeOutputCPCode); 
+#endif
     std::string languageCode;
     if (argc < 4)
     {

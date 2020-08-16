@@ -1,0 +1,53 @@
+#!/bin/sh
+
+FILE="UNKNOWN"
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    FILE="coauthor_linux64"
+elif [[ "$OSTYPE" == "msys" ]]; then
+    FILE="coauthor_win64.exe"
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+    FILE="coauthor_win64.exe"
+elif [[ "$OSTYPE" == "win32" ]]; then
+    FILE="UNKNOWN"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    FILE="coauthor_macos64"
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+    FILE="UNKNOWN"
+fi
+
+if [[ "$FILE" == "UNKNOWN" ]]; then
+    echo "No release found for this operating system"
+    exit 1
+fi
+
+EXEC_FOLDER=".git/hooks"
+REPO="jvbsl/coauthors"
+EXEC_TEMP="$EXEC_FOLDER/$FILE"
+
+LATEST_TAG=$(curl --silent "https://api.github.com/repos/$REPO/releases/latest" | # Get latest release from GitHub api
+    grep '"tag_name":' |                                            # Get tag line
+    sed -E 's/.*"([^"]+)".*/\1/')
+
+CURRENT_TAG=$(cat $EXEC_FOLDER/latest_coauthor 2> /dev/null)
+
+if [ ! -f "$EXEC_TEMP" ] || [ ! "$CURRENT_TAG" = "$LATEST_TAG" ] ; then
+    echo "$LATEST_TAG" > $EXEC_FOLDER/latest_coauthor
+        
+    DOWNLOAD_URL="https://github.com/$REPO/releases/download/$LATEST_TAG/$FILE"
+    echo "Try to download latest coauthor release..."
+
+    curl -s --fail -L -o "$EXEC_TEMP" "$DOWNLOAD_URL"
+
+    if (( $? != 0 )); then
+        echo "No release found for this operating system and architecture"
+        exit 1
+    fi
+
+    chmod +x "$EXEC_TEMP" 2&> /dev/null || true
+fi
+
+
+commit_file=$1
+$EXEC_TEMP . $commit_file
+
+
